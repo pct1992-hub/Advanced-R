@@ -1,0 +1,272 @@
+---
+title: "More ggplot Figures Peer Review"
+output: html_document
+---
+
+# PUT YOUR NAME HERE
+
+## Problem 1
+
+Create the figure in the solution for Problem 1, using the data included in the R Markdown file.
+
+```{r problem_1_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+library(tidyverse)
+
+set.seed(12345)
+var1<-runif(50,0,10)
+set.seed(12345)
+var2<-var1+rnorm(50,5,2)
+set.seed(12345)
+var3<- var1*(-rnorm(50,1,.2))
+
+dat1<-tibble(var1,var2,var3)
+
+
+```
+
+
+####Make sure you install any necessary libraries
+```{r problem_1, echo=FALSE, message=FALSE}
+# Create the plot
+ggplot(dat1, aes(x = var1, y = var2)) +
+  geom_point(color = "black") + # Scatter plot
+  geom_smooth(method = "loess", color = "blue", fill = "gray", alpha = 0.4) + # Smoothed line with confidence interval
+  labs(x = "Variable1", y = "Variable2") + # Axis labels
+  theme_minimal() # Clean theme
+####PUT YOUR CODE HERE
+```
+
+## Problem 2
+
+Create the figure in the solution for Problem 2, using the data included in the R Markdown file.
+
+```{r problem_2_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+set.seed(10)
+var1<-runif(50,0,10)
+set.seed(10)
+var2<-var1+rnorm(50,5,2)
+set.seed(10)
+var3<- var1*(-rnorm(50,1,.2))
+
+dat2<-tibble(var1,var2,var3)
+```
+
+
+```{r solution_p2,echo=FALSE,message=FALSE}
+
+library(GGally)
+
+# Create the pair plot with correlation values
+ggpairs(dat2, 
+        upper = list(continuous = wrap("cor", size = 6, color = "blue")),  # Display correlations
+        lower = list(continuous = wrap("points", color = "orange")),        # Scatter plot
+        diag = list(continuous = wrap("densityDiag", fill = "blue")),        # Density plot
+        axisLabels = "show")  # Display axis labels
+
+
+```
+
+## Problem 3
+
+Create the figure in the solution for Problem 3, using the data included in the R Markdown file.
+
+```{r problem_3_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+set.seed(12)
+var1<-runif(50,0,10)
+set.seed(12)
+var2<-var1+rnorm(50,5,2)
+set.seed(12)
+var3<- var1*(-rnorm(50,1,.2))
+
+dat3<-tibble(var1,var2,var3)
+```
+
+```{r problem3,echo=FALSE}
+
+# Compute the correlation matrix
+corr_matrix <- cor(dat3)
+
+# Convert the correlation matrix to a tidy format for ggplot2
+corr_data <- as.data.frame(as.table(corr_matrix))
+
+# Filter out the diagonal elements (self-correlations)
+corr_data <- corr_data[corr_data$Var1 != corr_data$Var2, ]
+
+# Create the heatmap plot with the correct axis configuration
+ggplot(corr_data, aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) + 
+  labs(x = "Variables", y = "Variables", fill = "Corr") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels for better readability
+    axis.text.y = element_text(size = 12),  # Adjust y-axis text size
+    axis.title = element_text(size = 14)  # Increase axis title size for clarity
+  ) +
+  scale_x_discrete(limits = c("var2", "var3")) + # Set x-axis order
+  scale_y_discrete(limits = c("var1", "var2"))  # Set y-axis order
+```
+
+## Problem 4
+
+Create the figure in the solution for Problem 4, using the data included in the R Markdown file.
+
+```{r problem_4_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+set.seed(5678)
+var1<-rnorm(10,25,5)
+names<-letters[1:10]
+
+dat4<-tibble(names,var1)
+```
+
+```{r problem_4,echo=FALSE}
+
+# Create the dot plot with horizontal lines
+ggplot(dat4, aes(x = var1, y = names)) +
+  geom_point(color = "black", size = 4) +  # Black dots
+  geom_vline(xintercept = 0, linetype = "dotted", color = "red") +  # Dotted vertical lines
+  labs(x = "var1", y = "names") +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(color = "red", linetype = "dotted"),  # Red dotted lines
+    axis.text.y = element_text(size = 12),  # Adjust y-axis text size
+    axis.title = element_text(size = 14)  # Increase axis title size for clarity
+  )
+```
+
+## Problem 5
+
+Create the figure in the solution for Problem 5, using the data included in the R Markdown file.
+
+```{r problem_5_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+set.seed(13)
+var1<-rnorm(10,25,5)
+names<-letters[1:10]
+
+dat5<-tibble(names,var1)
+```
+
+```{r problem_5,echo=FALSE}
+
+
+# Create the dot plot with vertical lines, adjusted for axis swap
+ggplot(dat5, aes(x = names, y = var1)) +
+  geom_point(color = "darkgreen", size = 4) +  # Green dots
+  geom_segment(aes(x = names, xend = names, y = 0, yend = var1), color = "darkgreen") +  # Vertical lines
+  labs(x = "Category", y = "Variable 1") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12),  # Adjust x-axis text size
+    axis.title = element_text(size = 14)  # Increase axis title size for clarity
+  )
+
+
+```
+
+## Problem 6
+
+Create the figure in the solution for Problem 6, using the data included in the R Markdown file.
+
+```{r problem_6_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+set.seed(8)
+fiction<-tibble(Genre=rep("Fiction",5),Time=seq(1:5),Total=sample(1:10,5))
+set.seed(7)
+biography<-tibble(Genre=rep("Biography",5),Time=seq(1:5),Total=sample(1:10,5))
+set.seed(9)
+mystery<-tibble(Genre=rep("Mystery",5),Time=seq(1:5),Total=sample(1:10,5))
+
+books_checked_out<-bind_rows(fiction,biography,mystery)
+```
+
+```{r problem_6,echo=FALSE}
+
+# Create the stacked area plot
+ggplot(books_checked_out, aes(x = Time, y = Total, fill = Genre)) +
+  geom_area() +
+  labs(x = "Time", y = "Total", title = "Books Checked Out") +
+  scale_fill_manual(values = c("red", "green", "blue")) +  # Custom colors for each genre
+  theme_minimal() +
+  theme(
+    axis.title = element_text(size = 14),  # Increase axis title size
+    axis.text = element_text(size = 12),  # Adjust axis text size
+    legend.title = element_text(size = 14),  # Increase legend title size
+    legend.text = element_text(size = 12)  # Adjust legend text size
+  )
+
+```
+
+## Problem 7
+
+Create the figure in the solution for Problem 7, using the data included in the R Markdown file.
+
+```{r problem_7_data,include=FALSE}
+
+#####DO NOT MODIFY THIS CHUNK
+
+books_checked_out2 <- books_checked_out %>%
+  filter(Time==1 | Time==5) %>%
+  pivot_wider(names_from = Time,values_from=Total) %>%
+  rename(Time1=`1`,Time5=`5`)
+```
+   
+```{r,problem_7,echo=FALSE,message=FALSE}   
+# Create the plot
+ggplot(books_checked_out2, aes(x = Time1, y = Genre)) +
+  geom_point(color = "red", size = 4) +  # Red dots for Time 1
+  geom_point(aes(x = Time5), color = "purple", size = 4) +  # Purple dots for Time 5
+  geom_segment(aes(x = Time1, xend = Time5, y = Genre, yend = Genre), color = "black") +  # Black lines connecting the dots
+  labs(x = "Total", y = "Genre", title = "Books Checked Out") +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 12),  # Adjust y-axis text size
+    axis.title = element_text(size = 14),  # Increase axis title size
+    legend.position = "none"  # Remove legend since we have custom colors for each point
+  )
+
+```
+
+## Problem 8
+
+Create the figure in the solution for Problem 8, using the data included in the R Markdown file.
+
+```{r, problem_8_data,include=FALSE}
+
+pie_dat<-c(1,2,3,4,5)
+```
+
+```{r, problem_8,echo=FALSE}
+###HINT: check the Help file for pie to see how to specify the color to the my_color palette
+
+library(RColorBrewer)
+
+# Color palette
+my_color <- brewer.pal(5, "Spectral")
+
+# Create the pie chart
+ggplot(data.frame(x = pie_dat), aes(x = "", y = x, fill = factor(1:length(x)))) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +  # Make it a pie chart
+  scale_fill_manual(values = my_color) +  # Custom colors
+  theme_void() +  # Remove the axes and gridlines
+  labs(title = "Total")
+
+```
+
+
