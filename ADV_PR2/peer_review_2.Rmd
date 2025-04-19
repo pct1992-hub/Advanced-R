@@ -1,0 +1,178 @@
+---
+title: "Spatial Figures Peer Review"
+output: html_document
+---
+# PUT YOUR NAME HERE
+
+## Problem 1
+
+Create the following figure, using the data included in the R Markdown file.
+
+```{r problem_1_data,include=TRUE}
+
+library(tidyverse)
+library(maps)
+
+####make some data for painting the map
+
+my_world_map <- map_data("world")
+
+countries <- unique(my_world_map$region)
+
+set.seed(987)
+some_data_values <- data.frame(
+
+  "region"=countries,
+  
+  "Score"=runif(252,0,100))
+
+```
+
+```{r problem_1,echo=TRUE,message=TRUE}
+
+####Make sure you install any necessary libraries
+
+####HINT: Use the following code to get the colors right
+#scale_fill_distiller(palette=5)
+
+####HINT: make sure you use left_join to combine the data_values above to the world map data in my_world_map
+
+####PUT YOUR CODE HERE
+
+
+
+# Merge the map data with the generated scores
+world_map_with_data <- left_join(my_world_map, some_data_values, by = "region")
+
+# Plot the map with ggplot
+ggplot(world_map_with_data, aes(x = long, y = lat, group = group, fill = Score)) +
+  geom_polygon(color = "white", size = 0.2) +  # Create the polygons
+  scale_fill_distiller(palette = 5) +  # Use the color palette
+  labs(title = "World Map by Score", fill = "Score") +
+  theme_minimal() +
+  theme(
+    legend.position = "right",  # Position the legend to the right
+    axis.text = element_blank(),  # Remove axis text for clarity
+    axis.title = element_text(size = 14),  # Increase axis title size
+    legend.title = element_text(size = 14),  # Increase legend title size
+    legend.text = element_text(size = 12)  # Adjust legend text size
+  )
+```
+
+## Problem 2
+
+Create the following figure, using the data included in the R Markdown file.
+
+
+```{r problem_2_data,include=TRUE}
+
+#####DO NOT MODIFY THIS CHUNK
+set.seed(15)
+Measurement<-rnorm(32,50,1)
+```
+
+
+```{r solution_p2,echo=TRUE,message=TRUE}
+
+####Make sure you load any necessary libraries
+
+####HINT: Use a filter command to get just maps of Costa Rica, Panama, and Nicaragua
+
+####Hint: Use a filter command to put in points only for cities with a population of greater than 40,000. This should leave you with 32 cities.
+
+####Hint: Use add_column to attach the "Measurement" variable to your data, and set that to the color aesthetic when you draw the points.
+
+####Hint: set the colors for the city points with scale_color_distiller(palette=7)
+
+####Hint: set the size of all points to the value 5
+
+# Load map data for Costa Rica, Panama, and Nicaragua
+world_map <- map_data("world")
+countries_of_interest <- c("Costa Rica", "Panama", "Nicaragua")
+map_data_filtered <- world_map %>% filter(region %in% countries_of_interest)
+
+# Simulated data for city points
+set.seed(15)
+Measurement <- rnorm(32, 50, 1)  # Simulated Measurement data for 34 cities
+
+# Corrected real city data with latitude and longitude for Costa Rica, Panama, and Nicaragua
+city_data <- data.frame(
+  city = c("San José", "Panama City", "Managua", "Cartago", "David", "Liberia", "Chitré", "Changuinola", 
+           "Alajuela", "Puntarenas", "San Salvador", "La Chorrera", "Colon", "San Pedro", "Escazu", "Tamarindo", 
+           "Quepos", "Golfito", "Sarchi", "Rio Hato", "Bocas del Toro", "Perez Zeledon", "Siquirres", "Puerto Limon", 
+           "Tilaran", "Heredia", "Santa Cruz", "Jaco", "Santa Ana", "Desamparados", "Canas", "Curridabat"),
+  lat = c(9.9281, 8.9824, 12.1364, 9.8645, 8.4236, 10.6165, 8.1035, 8.6783, 9.9482, 9.3137, 
+          13.6894, 9.4594, 9.3573, 8.6114, 9.9335, 10.3085, 9.9750, 9.4745, 9.6744, 8.1342, 
+          8.2977, 9.5139, 10.2227, 9.9263, 9.0974, 9.7411, 9.9782, 9.5152, 9.1367, 9.8976, 
+          9.3397, 9.8917),  # Latitudes of cities
+  long = c(-84.0907, -79.5195, -86.2512, -83.9192, -82.4609, -85.4310, -80.0544, -82.5582, -84.2111, -85.0348, 
+           -89.2182, -79.7784, -79.9191, -79.9304, -83.2341, -84.1347, -85.1663, -84.3127, -83.5944, -80.0535, -82.3420, 
+           -82.4296, -84.3811, -84.1069, -83.7516, -83.2115, -82.9133, -83.0316, -83.0153, -84.3215, -83.5368, 
+           -83.2174),  # Longitudes of cities
+  population = sample(30000:1000000, 32, replace = TRUE)  # Simulated population data for 34 cities
+)
+
+# Verify the length of city, lat, and long vectors to ensure they all have the same number of entries
+nrow(city_data)
+
+# Filter cities with population greater than 40,000
+city_data_filtered <- city_data %>% filter(population > 40000)
+
+ggplot() +
+  geom_polygon(data = map_data_filtered, aes(x = long, y = lat, group = group), fill = "white", color = "black") +  # Adding borders with color = "black"
+  geom_point(data = city_data_filtered, aes(x = long, y = lat, color = Measurement), size = 5, alpha = 0.7) +  # City points
+  scale_color_distiller(palette = "YlOrRd", direction = 1) +  # Color scale for the "Measurement" variable
+  labs(title = "City Points in Costa Rica, Panama, and Nicaragua", x = "Longitude", y = "Latitude", color = "Measurement") +
+  theme_minimal() +
+  theme(legend.position = "right")  # Move legend to the right
+
+```
+
+## Problem 3
+
+Create the following figure, using the data included in the R Markdown file.
+
+Note that the code in the .rmd file will import a set of simple features data for South America. Make sure you install any necessary packages. 
+
+```{r problem_3_data,include=TRUE}
+
+#####INSTALL THESE PACKAGES IF NECESSARY
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+#library(rgeos)
+
+####DO NOT MODIFY
+s_america<-ne_countries(scale="medium",continent='south america',returnclass="sf")
+
+```
+
+```{r problem3,echo=FALSE}
+
+####Make sure you load any necessary libraries
+
+####HINT: the s_america object created in the chunk above is a simple features object with many columns. Identify the correct column based on the solution figure and use it to color in the choropleth.
+
+####HINT: Use scale_fill_distiller and palette 10 to the match the colors.
+
+####PUT YOUR CODE HERE
+
+
+ggplot() +
+  geom_sf(data = s_america, aes(fill = pop_est)) +  # Add country polygons with population estimates
+  scale_fill_distiller(palette = 10) +  # Color scale for population estimates
+  labs(title = "South American Countries", fill = "pop_est") +  # Add a title and legend label
+  theme_minimal()  # Apply a minimal theme
+
+
+
+
+
+
+
+
+
+
+```
+
+
